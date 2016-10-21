@@ -1,0 +1,209 @@
+#+TITLE:     Get started with express
+#+EMAIL:     zf.pascal@gmail.com
+#+DATE:      2016-10-21
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:
+#+LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+
+* Routing
+
+** application
+
+#+BEGIN_SRC js
+let express = require("express")
+let app = express()
+
+app.get('/', (req, res)=> {
+  res.send('Hello World')
+});
+
+app.listen(3000)
+#+END_SRC
+
+** router
+
+use router for non-trivial apps:
+
+#+BEGIN_SRC js
+import express, {Router} from "express";
+
+let app = express();
+let router = new Router();
+router.get("/", (req, res) => {
+    res.send("index of a ambitious app");
+});
+app.use("/", router);
+
+app.listen(3000);
+#+END_SRC
+
+** params
+
+#+BEGIN_SRC js
+router.get("/:id", (req, res) => {
+    req.param("id"); // deprecated
+    req.params.id;
+    req.query.key;
+});
+#+END_SRC
+
+* middlewares
+
+** middleware
+
+- modify =req= or =res=
+- call =next()=
+
+#+BEGIN_SRC ditaa :file middleware-express.png
+request --> router --> middleware --> middleware --> handler --> response
+#+END_SRC
+
+#+RESULTS:
+[[file:middleware-express.png]]
+
+** the simplest middleware
+
+#+BEGIN_SRC js
+function(req, res, next) {
+    next();
+}
+#+END_SRC
+
+** passing options to middlewares
+
+#+BEGIN_SRC js
+function(options) {
+    return function(req, res, next) {
+        next();
+    }
+}
+#+END_SRC
+
+** mounting a middleware
+
+#+BEGIN_SRC js
+router.get("/pth", midware(opts), (req, res)=> {
+    // handler
+});
+#+END_SRC
+
+** mounting a middleware
+
+#+BEGIN_SRC js
+router.use("/path", midware(opts));
+#+END_SRC
+
+#+BEGIN_SRC js
+router.use(midware(opts));
+#+END_SRC
+
+* common middlewares
+
+** bodyParser
+
+bodyParser parses request body and set =req.body=
+#+BEGIN_SRC js
+import bodyParser from 'body-parser';
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+#+END_SRC
+
+** cookieParser
+
+cookieParser parses cookie in request header and set =req.cookies=, or =req.signedCookies=
+#+BEGIN_SRC js
+import cookieParser from 'cookie-parser';
+app.use(cookieParser("secret"));
+#+END_SRC
+
+** static
+
+#+BEGIN_SRC js
+import express from "express";
+app.use("/public", express.static(`$__dirname/static`));
+#+END_SRC
+
+* more on handler
+
+** =send= and =json=
+
+=send= behaves same as =json= when param passed is of type =Array= or =Object=
+
+** =status=
+
+#+BEGIN_SRC js
+req.status(404).end();
+
+req.sendStatus(500);
+
+res.status(500).send('Internal Server Error')
+#+END_SRC
+
+* view rendering
+
+** available rendering engines
+
+- pug(jade)
+- ejs
+- mustache
+
+** configure view engine
+** passing variables
+
+in handler:
+#+BEGIN_SRC js
+res.render("path/to/view", {key: val});
+#+END_SRC
+
+in middleware:
+#+BEGIN_SRC js
+res.locals.name = value;
+#+END_SRC
+
+set global view variables:
+#+BEGIN_SRC js
+app.locals.name = value;
+#+END_SRC
+
+set global view variables(koa):
+#+BEGIN_SRC js
+ctx.state.name = value;
+#+END_SRC
+
+* error handling
+
+** throw an error
+
+#+BEGIN_SRC js
+(req, res, next) => {
+    next(new Error("boom"));
+}
+#+END_SRC
+
+** handle error
+
+#+BEGIN_SRC js
+app.use((err, req, res, next) => {
+    log.error(err, "error caught");
+    res.sendStatus(500);
+});
+#+END_SRC
+
+** 404
+
+#+BEGIN_SRC js
+app.get("*", (req, res) => {
+    res.sendStatus(404);
+});
+#+END_SRC
+

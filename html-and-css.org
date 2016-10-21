@@ -1,0 +1,431 @@
+#+TITLE:     Get started with HTML and CSS
+#+AUTHOR:    Feng Zhou
+#+EMAIL:     zf.pascal@gmail.com
+#+DATE:      2016-10-21
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:
+#+LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+
+* HTML
+
+** What is HTML?
+
+*** Define HTML
+
+Hypertext Markup Language
+
+*** Markup Languages
+
+- xml
+- haml
+- yaml
+- toml
+
+*** But I still don't get it
+
+the structure of the web pages
+
+- list
+- table
+- form
+- button
+- and more
+  
+*** Example
+
+#+BEGIN_SRC html
+<html>
+  <head>
+    <title>Example</title>
+  </head>
+  <body>
+    <h1>Heading</h1>
+    <p>this is a paragraph</p>
+  </body>
+</html>
+#+END_SRC
+
+** Tags
+
+*** <head>
+
+most tags in <head> are invisible
+
+#+BEGIN_SRC html
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="web dev tutorials">
+  <link rel="stylesheet" type="text/css" href="theme.css">
+  <script src="main.js" />
+</head> 
+#+END_SRC
+
+*** <body>
+
+<body> contains the real content
+
+*** <a> for anchor
+
+the most important tag
+
+#+BEGIN_SRC html
+<a href="http://w3c.org">w3c</a>
+#+END_SRC
+
+*** <h1> - <h6> for headings
+
+#+BEGIN_SRC html
+<h1>Title<h1>
+<h2>Section Title<h2>
+#+END_SRC
+
+*** <p> for paragraph
+
+html was for documentation
+
+#+BEGIN_SRC html
+<p>a paragraph</p>
+#+END_SRC
+
+#+BEGIN_SRC html
+<p>
+another
+paragraph
+</p>
+#+END_SRC
+
+*** <br> line break
+
+line break in the source code are ignored, but why?
+
+#+BEGIN_SRC html
+<p>
+line1
+<br>
+line2
+</p>
+#+END_SRC
+
+*** <pre> preformatted
+
+#+BEGIN_SRC html
+<pre>
+line1
+line2
+</pre>
+#+END_SRC
+
+*** <ol> ordered list
+#+BEGIN_SRC html
+<ol>
+  <li>first</li>
+  <li>last</li>
+<ol>
+#+END_SRC
+*** <ul> unordered list
+#+BEGIN_SRC html
+<ul>
+  <li>first</li>
+  <li>last</li>
+<ul>
+#+END_SRC
+*** <div>
+div is ubiquitous
+
+div has no semantic meaning, think it as a container
+
+#+BEGIN_SRC html
+<div class="ad"></div>
+#+END_SRC
+
+*** Some outdated tags
+
+why you should not use them?
+
+- i for italic
+- b for bold
+
+*** More tags
+
+- http://www.w3schools.com/tags/default.asp
+
+** More on Elements
+
+*** Attribute
+
+#+BEGIN_SRC html
+<a href="http://gnu.org">GNU</a>
+#+END_SRC
+
+*** Children
+
+#+BEGIN_SRC html
+<ol>
+  <li>first</li>
+  <li>second</li>
+  <li>last</li>
+</ol>
+#+END_SRC
+
+*** To close or not to close
+
+p has children, must be closed
+
+#+BEGIN_SRC html
+<p></p>
+#+END_SRC
+
+img has no children
+
+#+BEGIN_SRC html
+<img src="path/to/image.png">
+<img src="path/to/image.png" />
+#+END_SRC
+
+*** Inline vs Block
+
+#+BEGIN_SRC html
+<p>
+begin
+<span>inline</span>
+<span>element</span>
+end
+</p>
+#+END_SRC
+
+#+BEGIN_SRC html
+<div>
+begin
+<div>block</div>
+<div>element</div>
+end
+</div>
+#+END_SRC
+
+*** Block element examples
+
+- p
+- div
+- table 
+- pre
+- form
+
+*** Inline element examples
+
+- span
+- a
+- img
+- input
+
+** Quiz
+
+*** Valide?
+
+#+BEGIN_SRC html
+<span> 1 < 2 </span>
+#+END_SRC
+
+*** Escapting
+
+#+BEGIN_SRC html
+<span> 1 &lt; 2 </span>
+#+END_SRC
+
+#+BEGIN_SRC html
+<span>1&nbsp;2</span>
+#+END_SRC
+
+* CSS
+
+** What is CSS?
+
+*** Define CSS
+
+Cascading Style Sheet
+
+*** What is CSS?
+
+the presentation of web pages
+
+- color
+- font
+- layout
+- animation
+- and more
+  
+*** Example
+
+#+BEGIN_SRC css
+body {
+  background: #efefef;
+  width: 960px;
+}
+#+END_SRC
+
+** Integrating CSS
+
+*** Ways to adding css to web page
+
+- inline
+- use the <style> element
+- use <link>
+  
+*** Inlining
+
+#+BEGIN_SRC html
+<div style="font-size: 20px; color: red">
+  in read
+</div>
+#+END_SRC
+
+*** Inlining
+
+it's quick but ugly, why?
+  
+*** Using <style>
+
+#+BEGIN_SRC html
+<style type="text/css">
+body {
+  color: black;
+}
+div {
+  color: white;
+}
+</style>
+#+END_SRC
+
+*** Using <link>
+
+loading external style sheet
+
+#+BEGIN_SRC html
+<link rel="stylesheet" type="text/css" href="theme.css">
+#+END_SRC
+
+** Syntax
+
+*** Selector and rule
+
+#+BEGIN_SRC css
+a {
+  color: red;
+}
+#+END_SRC
+
+** Selectors
+
+*** By tag name
+
+#+BEGIN_SRC css
+a {
+  color: red;
+}
+#+END_SRC
+
+*** By id
+
+#+BEGIN_SRC html
+<div id="main"></div>
+#+END_SRC
+
+#+BEGIN_SRC css
+#main {
+}
+#+END_SRC
+
+*** By class
+
+#+BEGIN_SRC html
+<div class="container"></div>
+#+END_SRC
+
+#+BEGIN_SRC css
+.container {
+}
+#+END_SRC
+
+*** Which way is better?
+
+Which way is better?
+
+** Rules
+
+*** font
+
+#+BEGIN_SRC css
+color: #ccc;
+font-size: 30px;
+font-family: 'Helvetica';
+font-weight: bold;
+#+END_SRC
+
+*** color
+
+#+BEGIN_SRC css
+color: #333;
+color: #eaeaea;
+color: blue;
+color: rgb(255, 0, 0);
+#+END_SRC
+
+*** margin
+
+#+BEGIN_SRC css
+margin-top: 10px;
+margin-right: 20px;
+margin-bottom: 30px;
+margin-left: 40px;
+#+END_SRC
+
+*** margin
+
+#+BEGIN_SRC css
+margin: 10px 20px 30px 40px;
+#+END_SRC
+
+*** margin
+
+#+BEGIN_SRC css
+margin: 0 auto;
+#+END_SRC
+
+*** padding
+
+syntax ideneical as margin
+
+*** border
+
+#+BEGIN_SRC css
+border: 1px solid red;
+#+END_SRC
+
+** Quiz
+
+*** Selectors
+
+#+BEGIN_SRC css
+body div.ad {}
+#+END_SRC
+
+#+BEGIN_SRC css
+div.ad p {}
+#+END_SRC
+
+*** Margin
+
+#+BEGIN_SRC css
+margin: 10px 20px
+#+END_SRC
+
+* Web Development Challenges
