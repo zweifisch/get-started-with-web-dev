@@ -1,0 +1,499 @@
+#+TITLE:     Get Started with Koa
+#+AUTHOR:    Feng Zhou
+#+EMAIL:     zf.pascal@gmail.com
+#+DATE:      2016-10-21
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:
+#+LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+latex_header: \mode<beamer>{\usetheme{metropolis}}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+
+* HTTP 101
+
+** TCP Socket
+
+*** Socket
+
+- telephone
+- bi-directional
+- ip address and port
+
+*** Port
+
+- physical port like usb port
+- 2^16
+- port for http server is 80
+- bind to port lower than 1024 requires root privilage
+
+** The Protocol
+
+*** Request
+
+: GET /user/1 HTTP/1.1
+: Host: localhost:3000
+: User-Agent: curl/7.47.0
+: Accept: */*
+
+*** Request
+
+- method
+- path
+- headers
+  
+*** Methods
+
+- GET
+- POST
+- PUT
+- DELETE
+- HEAD
+- PATCH
+
+*** Response
+
+: HTTP/1.1 200 OK
+: Content-Type: text/plain; charset=utf-8
+: Content-Length: 11
+: Date: Wed, 26 Oct 2016 05:29:14 GMT
+: Connection: keep-alive
+:
+: hello there
+
+*** Response
+
+- status code
+- headers
+- body
+  
+*** Status codes
+
+- 200 :: OK
+- 304 :: Not Modified
+- 400 :: Bad Request
+- 401 :: Unauthorized
+- 403 :: Forbidden
+- 404 :: Not Found
+
+*** Request and response
+
+- stateless
+
+*** Cookies
+  
+- set by server
+- carried in the request header by client(browser)
+  
+*** Cookies
+
+- authentication
+- tracking client
+- signed/ecrypted
+
+*** Websocket
+
+- realtime
+
+*** HTTP/2
+
+- binary protocol
+- better speed
+  - multiple request, one TCP connection
+  - header compression
+
+** Inspecting HTTP
+
+*** tcpdump
+
+: sudo tcpdump -X -nni lo port 3000 and tcp
+
+*** tcpflow
+
+: sudo tcpflow -X /dev/null -i any -C port 3000
+
+*** gor
+
+: sudo gor --input-raw-track-response \
+:   --input-raw :3000 --output-stdout
+
+*** mitmproxy
+
+: export http_proxy=http://127.0.0.1:8080
+: curl localhost:3000
+
+* JavaScript
+
+** ECMAScript and JavaScript
+
+*** JavaScript
+Any application that can be written in JavaScript, will eventually be written in JavaScript.
+*** The Origin of JavaScript
+
+- 1995
+- Nestscape
+- Brendan Eich
+- ten days
+
+*** ECMAScript
+
+- ECMAScript :: the standard
+- JavaScript :: the implemantation of ECMAScript
+
+*** Transpiling
+
+- Transpling :: source code to source code compilation
+     
+: ES 6 -> ES 5
+: CoffeeScript -> JavaScript
+: TypeScript -> JavaScript
+: Elm -> JavaScript
+
+** Babel
+
+*** What is Babel
+
+- Babel compiles newer version js to older version js
+- https://babeljs.io/
+
+*** Using Babel
+
+: npm install --global babel-cli
+
+this is not the recommended way!
+
+*** Using Babel
+
+: $ babel script.js
+
+*** Using Babel
+
+: $ babel-node
+
+*** Configure babel plugins
+
+add to =package.json=
+
+: {
+:   "babel": {
+:     "plugins": [
+:       "transform-async-to-generator",
+:       "transform-es2015-modules-commonjs"
+:     ]
+:   }
+: }
+
+** The languages
+
+*** Functions
+
+- common functions
+- generator functions
+- async functions
+
+*** Common Functions
+
+#+BEGIN_SRC js
+function add(num, num2) {
+  return num + num2
+}
+#+END_SRC
+
+#+BEGIN_SRC js
+const add = function(num, num2) {
+    return num + num2
+}
+#+END_SRC
+
+*** Generator Functions
+
+- function can only return one value
+- generators can yield multiple values
+
+*** Generator Functions
+
+#+BEGIN_SRC js
+function* range(start, end) {
+  while (start <= end) {
+    yield start
+    start = start + 1
+  }
+}
+#+END_SRC
+
+#+BEGIN_SRC js
+for (let i of range(1, 9)) {
+  console.log(i)
+}
+#+END_SRC
+
+*** Async Functions
+
+async functions alway return a Promise
+
+#+BEGIN_SRC js
+async function() {
+  await fetch()
+}
+#+END_SRC
+
+*** Fat Arrow
+
+- no context(this)
+- terse
+
+#+BEGIN_SRC js
+const add = (num, num2) => num + num2
+#+END_SRC
+
+#+BEGIN_SRC js
+const add = (num, num2) => {
+  return num + num2
+}
+#+END_SRC
+
+* Koa
+
+** The Origin
+
+*** The Origin
+
+Successor of Express, the most popular nodejs web framework
+
+*** Compared with Express
+
+- both are middleware based
+- express uses callbacks
+- koa uses async function or generator function
+- koa is slimer, no middleware bundled
+
+*** Example Koa
+
+#+BEGIN_SRC javascript
+import Koa from "koa"
+const app = new Koa
+
+app.use(ctx => {
+    ctx.body = "koa"
+})
+
+app.listen(3000)
+#+END_SRC
+
+*** Example Express
+
+#+BEGIN_SRC javascript
+import Express from "express"
+const app = new Express
+
+app.get("/", (req, res) => {
+    res.send("express")
+})
+
+app.listen(3000)
+#+END_SRC
+
+*** Callback Hell
+
+or Pyramid of Doom
+
+** Middlewares
+
+*** Middleware
+
+#+ATTR_LATEX: :width 5cm
+[[file:assets/onion.jpg]]
+
+*** A logging middleware
+
+#+BEGIN_SRC js
+import Koa from "koa"
+const app = new Koa
+
+app.use(async (ctx, next) => {
+    console.log(`${ctx.method} ${ctx.path}`)
+    await next()
+})
+
+app.use(ctx => {
+    ctx.body = "hello there"
+})
+
+app.listen(3000)
+#+END_SRC
+
+#+BEGIN_SRC sh
+curl localhost:3000
+curl -X POST localhost:3000
+curl -X DELETE localhost:3000/users/1
+#+END_SRC
+
+*** A timing middleware
+
+#+BEGIN_SRC js
+const timeRequest = async (ctx, next) => {
+    const requestStarted = new Date()
+    await next()
+    console.log(`took: ${new Date() - requestStarted} ms`)
+}
+
+app.use(timeRequest)
+#+END_SRC
+
+*** Middleware is like Onion
+#+BEGIN_SRC js
+import Koa from "koa"
+const app = new Koa
+
+app.use(async (ctx, next) => {
+  console.log('>> one')
+  await next()
+  console.log('<< one')
+})
+#+END_SRC
+
+*** Middleware is like Onion
+
+#+BEGIN_SRC js
+app.use(async (ctx, next) => {
+  console.log('>> two')
+  ctx.body = 'two'
+  await next()
+  console.log('<< two')
+});
+
+app.use(async (ctx, next) => {
+  console.log('>> three')
+  await next()
+  console.log('<< three')
+})
+
+app.listen(3000)
+#+END_SRC
+
+*** Passing options to middlewares
+
+#+BEGIN_SRC js
+const myMiddleware = (options) => async (ctx, next) => {
+}
+#+END_SRC
+
+*** Mounting a middleware
+
+#+BEGIN_SRC js
+app.use(middleware(opts))
+#+END_SRC
+
+** Software Dev
+*** Semantic versioning
+
+[[http://semver.org/][semver]] for short, major.minor.patch, 1.20.1
+
+- major for incompatable change
+- minor for new feature
+- patch for bug fix
+- first table release should be 1.0.0
+  
+*** Npm and semver
+
+: npm install koa@next
+
+** Routing
+
+*** Routing
+
+The process of mapping requests to handlers
+
+- method
+- path
+
+*** Using koa-router
+
+koa has no built-in routing support
+
+: npm install --save koa-router@next
+
+*** Using koa-router
+
+#+BEGIN_SRC js
+import Router from "koa-router"
+const router = new Router
+
+router.get('/', ctx => {
+  ctx.body = 'router'
+})
+
+app.use(router.routes())
+#+END_SRC
+
+*** Extracting params from url
+
+#+BEGIN_SRC js
+router.get('/hello/:name', ctx => {
+  ctx.body = `hello ${ctx.params.name}`
+})
+#+END_SRC
+
+*** More HTTP methods
+
+#+BEGIN_SRC js
+router.post('/', ctx => {
+  ctx.body = `it was POST`
+})
+#+END_SRC
+
+** View rendering
+
+*** Popular engines
+
+- pug :: formerly know as jade
+- mustache :: minimal, logic less, language-agnostic
+- nunjucks :: inspired by jinja2
+- ejs :: old-style
+
+*** Koa views
+
+: npm install --save koa-views@next ejs
+
+*** Configure view engine
+
+#+BEGIN_SRC js
+import views from 'koa-views'
+
+app.use(views(`${__dirname}/views`, {
+  map: {html: 'ejs'}
+}))
+#+END_SRC
+
+*** Passing variables
+
+in handler
+
+#+BEGIN_SRC js
+ctx.render("index", {key: val})
+#+END_SRC
+
+in middleware
+
+#+BEGIN_SRC js
+ctx.state.name = value
+#+END_SRC
+
+** Serving statics files
+
+*** koa-static
+
+: npm install --save koa-static@next
+
+#+BEGIN_SRC js
+import serve from "koa-static"
+
+app.use(serve(`${__dirname}/public`))
+#+END_SRC
