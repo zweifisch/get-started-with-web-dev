@@ -1,7 +1,7 @@
-#+TITLE:     Get Started with Koa
+#+TITLE:     HTTP, Node.js and Koa
 #+AUTHOR:    Feng Zhou
 #+EMAIL:     zf.pascal@gmail.com
-#+DATE:      2016-10-21
+#+DATE:      2016-12-02
 #+DESCRIPTION:
 #+KEYWORDS:
 #+LANGUAGE:  en
@@ -17,11 +17,51 @@
 #+latex_header: \mode<beamer>{\usetheme{metropolis}}
 #+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
 
+* Learn you some cli for great good
+
+** Setup
+
+*** get Gow
+
+- Gnu on windows
+- https://github.com/bmatzelle/gow
+  
+** Play
+
+*** where am i
+
+- pwd :: print working directory
+- ls :: list directory contents
+     
+*** move
+
+- cd :: change directory
+     
+*** file inspection
+
+- file :: print file type
+- cat :: concat and print
+     
+*** create
+
+- mkdir :: make directory
+- touch :: can be used to create an empty file
+
+*** copy and rename
+
+- cp :: copy
+- mv :: move
+     
+*** destroy
+
+- rm :: remove
+- rmdir :: safely remove a directory
+
 * HTTP 101
 
 ** TCP Socket
 
-*** Socket
+*** TCP Socket
 
 - telephone
 - bi-directional
@@ -36,6 +76,11 @@
 
 ** The Protocol
 
+*** HTTP
+
+- HTTP :: Hypertext Transfer Protocol
+- HTML :: ?
+
 *** Request
 
 : GET /user/1 HTTP/1.1
@@ -43,11 +88,20 @@
 : User-Agent: curl/7.47.0
 : Accept: */*
 
+*** View Request with curl
+
+: curl -vs bing.com 2>&1 | grep '^>'
+
 *** Request
 
 - method
 - path
 - headers
+
+: GET /user/1 HTTP/1.1
+: Host: localhost:3000
+: User-Agent: curl/7.47.0
+: Accept: */*
   
 *** Methods
 
@@ -68,24 +122,50 @@
 :
 : hello there
 
+*** View Response with curl
+
+: curl -i gnu.com
+
 *** Response
 
 - status code
 - headers
 - body
+
+: HTTP/1.1 200 OK
+: Content-Type: text/plain; charset=utf-8
+: Content-Length: 11
+: Date: Wed, 26 Oct 2016 05:29:14 GMT
+: Connection: keep-alive
+:
+: hello there
   
-*** Status codes
+*** Status Codes
 
 - 200 :: OK
+- 301 :: Moved Permanently
 - 304 :: Not Modified
 - 400 :: Bad Request
 - 401 :: Unauthorized
 - 403 :: Forbidden
 - 404 :: Not Found
+- 500 :: Internal Server Error
+
+*** Status Codes
+
+: curl -i bing.com
+
+: curl -i cn.bing.com/.png
 
 *** Request and response
 
 - stateless
+
+*** Tracking users
+
+- cookie
+- referer
+- variables embedded in url
 
 *** Cookies
   
@@ -94,12 +174,17 @@
   
 *** Cookies
 
+: curl bing.com -siL | grep Set-Cookie
+  
+*** Cookies
+
 - authentication
 - tracking client
-- signed/ecrypted
+- signed/ecrypted/httponly/expiration
 
 *** Websocket
 
+- bidirectional
 - realtime
 
 *** HTTP/2
@@ -113,18 +198,34 @@
 
 *** tcpdump
 
+- http://www.tcpdump.org/
+- state-of-the-art traffic inspecting tool
+- not very friendly for newbies
+
 : sudo tcpdump -X -nni lo port 3000 and tcp
 
 *** tcpflow
+
+- https://github.com/simsong/tcpflow
+- output is easier to read for http inspection
 
 : sudo tcpflow -X /dev/null -i any -C port 3000
 
 *** gor
 
+- https://goreplay.org/
+- cross platform support
+- easy to install(single binary file, written in golang)
+
 : sudo gor --input-raw-track-response \
 :   --input-raw :3000 --output-stdout
 
 *** mitmproxy
+
+- https://mitmproxy.org/
+- has a gui
+- designed for http
+- available as a python module(but not available on windows)
 
 : export http_proxy=http://127.0.0.1:8080
 : curl localhost:3000
@@ -140,7 +241,7 @@ Any application that can be written in JavaScript, will eventually be written in
 - 1995
 - Nestscape
 - Brendan Eich
-- ten days
+- 10 days
 
 *** ECMAScript
 
@@ -149,7 +250,7 @@ Any application that can be written in JavaScript, will eventually be written in
 
 *** Transpiling
 
-- Transpling :: source code to source code compilation
+- Transpiling :: source code to source code compilation
      
 : ES 6 -> ES 5
 : CoffeeScript -> JavaScript
@@ -162,22 +263,32 @@ Any application that can be written in JavaScript, will eventually be written in
 
 - Babel compiles newer version js to older version js
 - https://babeljs.io/
+  
+*** npm and yarn
+
+- npm :: nodejs package manager
+- yarn :: facebook's improved package manger
+     
+*** get yarn
+
+: npm i -g yarn
+
+or
+
+: npm install --global yarn
 
 *** Using Babel
 
-: npm install --global babel-cli
+: yarn global add babel-cli
 
-this is not the recommended way!
+this is not the recommended way
 
-*** Using Babel
+*** Babel plugins
 
-: $ babel script.js
+: yarn add babel-plugin-transform-async-to-generator
+: yarn add babel-plugin-transform-es2015-modules-commonjs
 
-*** Using Babel
-
-: $ babel-node
-
-*** Configure babel plugins
+*** Babel plugins
 
 add to =package.json=
 
@@ -189,6 +300,26 @@ add to =package.json=
 :     ]
 :   }
 : }
+
+*** Babel plugins
+
+ or add to =.babelrc=
+ 
+: {
+:   "plugins": [
+:     "transform-async-to-generator",
+:     "transform-es2015-modules-commonjs"
+:   ]
+: }
+
+*** Using Babel
+
+: cat 00-babel.js
+: babel 00-babel.js
+
+*** Using Babel REPL
+
+: babel-node
 
 ** The languages
 
@@ -207,7 +338,7 @@ function add(num, num2) {
 #+END_SRC
 
 #+BEGIN_SRC js
-const add = function(num, num2) {
+let add = function(num, num2) {
     return num + num2
 }
 #+END_SRC
@@ -239,6 +370,16 @@ for (let i of range(1, 9)) {
 async functions alway return a Promise
 
 #+BEGIN_SRC js
+truth = async function() {
+  return true
+}
+
+truth()
+#+END_SRC
+
+*** Async Functions
+
+#+BEGIN_SRC js
 async function() {
   await fetch()
 }
@@ -250,14 +391,62 @@ async function() {
 - terse
 
 #+BEGIN_SRC js
-const add = (num, num2) => num + num2
+let add = (num, num2) => num + num2
 #+END_SRC
 
 #+BEGIN_SRC js
-const add = (num, num2) => {
+let add = (num, num2) => {
   return num + num2
 }
 #+END_SRC
+
+*** String interpolation
+
+#+BEGIN_SRC javascript :export both
+sum = 2
+`sum: ${sum}`
+#+END_SRC
+
+#+RESULTS:
+: sum: 2
+
+*** String interpolation
+
+#+BEGIN_SRC javascript :export both
+`sum: ${1 + 1}`
+#+END_SRC
+
+#+RESULTS:
+: sum: 2
+
+*** JSON
+
+- JSON :: JavaScript Object Notation, a subset of JavaScript
+
+#+BEGIN_SRC js
+{
+  "key": "value",
+  "object": {
+    "number": 1.2,
+  },
+  "array": [null, {"nested": true}]
+}
+#+END_SRC
+     
+*** JSON
+
+- less verbose than XML
+- very popular format for data exechange
+  
+*** JSON
+
+encoding
+
+: JSON.strigify(myObject)
+
+decoding
+
+: JSON.parse(inputString)
 
 * Koa
 
@@ -278,10 +467,10 @@ Successor of Express, the most popular nodejs web framework
 
 #+BEGIN_SRC javascript
 import Koa from "koa"
-const app = new Koa
+let app = new Koa()
 
-app.use(ctx => {
-    ctx.body = "koa"
+app.use(async (ctx) => {
+  ctx.body = await Promise.resolve("koa")
 })
 
 app.listen(3000)
@@ -291,10 +480,12 @@ app.listen(3000)
 
 #+BEGIN_SRC javascript
 import Express from "express"
-const app = new Express
+let app = Express()
 
 app.get("/", (req, res) => {
-    res.send("express")
+  Promise.resolve("express").then(body => {
+    res.send(body)
+  })
 })
 
 app.listen(3000)
@@ -303,6 +494,26 @@ app.listen(3000)
 *** Callback Hell
 
 or Pyramid of Doom
+
+#+BEGIN_SRC javascript
+operation1((err, result1) => {
+  operation2((err, result2) => {
+    operation3((err, result3) => {
+      ...
+    })
+  })
+})
+#+END_SRC
+
+*** Callback Hell
+
+#+BEGIN_SRC javascript
+async () => {
+  result1 = await operation1()
+  result2 = await operation2()
+  result3 = await operation3()
+}
+#+END_SRC
 
 ** Middlewares
 
@@ -315,19 +526,19 @@ or Pyramid of Doom
 
 #+BEGIN_SRC js
 import Koa from "koa"
-const app = new Koa
+let app = new Koa()
 
 app.use(async (ctx, next) => {
     console.log(`${ctx.method} ${ctx.path}`)
     await next()
 })
 
-app.use(ctx => {
-    ctx.body = "hello there"
-})
+app.use(ctx => { ctx.body = "hello there" })
 
 app.listen(3000)
 #+END_SRC
+
+*** A logging middleware
 
 #+BEGIN_SRC sh
 curl localhost:3000
@@ -338,8 +549,8 @@ curl -X DELETE localhost:3000/users/1
 *** A timing middleware
 
 #+BEGIN_SRC js
-const timeRequest = async (ctx, next) => {
-    const requestStarted = new Date()
+let timeRequest = async (ctx, next) => {
+    let requestStarted = new Date()
     await next()
     console.log(`took: ${new Date() - requestStarted} ms`)
 }
@@ -350,7 +561,7 @@ app.use(timeRequest)
 *** Middleware is like Onion
 #+BEGIN_SRC js
 import Koa from "koa"
-const app = new Koa
+let app = new Koa()
 
 app.use(async (ctx, next) => {
   console.log('>> one')
@@ -381,7 +592,8 @@ app.listen(3000)
 *** Passing options to middlewares
 
 #+BEGIN_SRC js
-const myMiddleware = (options) => async (ctx, next) => {
+let myMiddleware = (options) => async (ctx, next) => {
+  await next()
 }
 #+END_SRC
 
@@ -403,7 +615,7 @@ app.use(middleware(opts))
   
 *** Npm and semver
 
-: npm install koa@next
+: yarn add koa@next
 
 ** Routing
 
@@ -418,13 +630,13 @@ The process of mapping requests to handlers
 
 koa has no built-in routing support
 
-: npm install --save koa-router@next
+: yarn add koa-router@next
 
 *** Using koa-router
 
 #+BEGIN_SRC js
 import Router from "koa-router"
-const router = new Router
+let router = new Router()
 
 router.get('/', ctx => {
   ctx.body = 'router'
@@ -445,7 +657,7 @@ router.get('/hello/:name', ctx => {
 
 #+BEGIN_SRC js
 router.post('/', ctx => {
-  ctx.body = `it was POST`
+  ctx.body = 'it was POST'
 })
 #+END_SRC
 
@@ -460,7 +672,7 @@ router.post('/', ctx => {
 
 *** Koa views
 
-: npm install --save koa-views@next ejs
+: yarn add koa-views@next ejs
 
 *** Configure view engine
 
@@ -490,10 +702,45 @@ ctx.state.name = value
 
 *** koa-static
 
-: npm install --save koa-static@next
+: yarn add koa-static@next
 
 #+BEGIN_SRC js
 import serve from "koa-static"
 
 app.use(serve(`${__dirname}/public`))
+#+END_SRC
+
+** Form submission
+
+*** form
+
+#+BEGIN_SRC html
+<form method="POST">
+  <div>
+    <input name="username">
+  </div>
+  <div>
+    <input type="password" name="password">
+  </div>
+  <input type="submit" value="Submit">
+</form>
+#+END_SRC
+
+*** body parser
+
+- https://github.com/koajs/bodyparser
+  
+: yarn add koa-bodyparser@next
+
+*** body parser
+
+#+BEGIN_SRC javascript
+import bodyParser from 'koa-bodyparser'
+
+app.use(bodyParser())
+
+router.post('/', ctx => {
+  console.log(ctx.request.body)
+  ctx.body = ctx.request.body
+})
 #+END_SRC

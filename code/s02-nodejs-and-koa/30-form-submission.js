@@ -8,7 +8,7 @@ app.use(views(`${__dirname}/views`, {
 }))
 
 app.use(async ctx => {
-    await ctx.render("index", {date: "2016-12-31"})
+    await ctx.render("login")
 })
 
 app.listen(3000)

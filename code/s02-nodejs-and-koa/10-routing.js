@@ -1,5 +1,5 @@
 import Koa from "koa"
-const app = new Koa
+const app = new Koa()
 
 import Router from "koa-router"
 const router = new Router

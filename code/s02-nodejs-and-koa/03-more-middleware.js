@@ -1,5 +1,5 @@
 import Koa from "koa"
-const app = new Koa
+const app = new Koa()
 
 app.use(async (ctx, next) => {
     console.log(`${ctx.method} ${ctx.path}`)

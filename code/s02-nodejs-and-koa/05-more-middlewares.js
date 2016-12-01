@@ -1,5 +1,5 @@
 import Koa from "koa"
-const app = new Koa
+const app = new Koa()
 
 app.use(async function (ctx, next) {
   console.log('>> one')
